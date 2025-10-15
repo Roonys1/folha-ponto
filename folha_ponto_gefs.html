@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Folha de Ponto - GEF</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10mm;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 4px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      border: none;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    input:focus {
+      outline: none;
+      background-color: #eef;
+    }
+
+    select {
+      width: 100%;
+      font-size: 11px;
+    }
+
+    .assinatura {
+      margin-top: 30px;
+    }
+
+    #btn-imprimir {
+      margin-top: 20px;
+    }
+
+    @media print {
+      input, select, button {
+        border: none;
+      }
+      button {
+        display: none;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>RAZÃO SOCIAL: GEF SERVIÇOS EIRELI</h2>
+
+  <table>
+    <tr>
+      <td><strong>CNPJ</strong><br>11.515.115/0001-08</td>
+      <td colspan="2"><strong>ENDEREÇO</strong><br><input type="text" id="endereco"></td>
+      <td colspan="2"><strong>UNIDADE</strong><br>SANTOS</td>
+    </tr>
+    <tr>
+      <td><strong>COLABORADOR</strong><br><input type="text" id="colaborador"></td>
+      <td><strong>Nº CTPS</strong><br><input type="text" id="ctps"></td>
+      <td><strong>Nº REGISTRO</strong><br><input type="text" id="registro"></td>
+      <td colspan="2"><strong>FUNÇÃO</strong><br><input type="text" value="COZINHEIRO ESCOLAR"></td>
+    </tr>
+    <tr>
+      <td><strong>MÊS</strong><br>
+        <select id="mes">
+          <option value="1">Janeiro</option>
+          <option value="2">Fevereiro</option>
+          <option value="3">Março</option>
+          <option value="4">Abril</option>
+          <option value="5">Maio</option>
+          <option value="6">Junho</option>
+          <option value="7">Julho</option>
+          <option value="8">Agosto</option>
+          <option value="9">Setembro</option>
+          <option value="10" selected>Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+      </td>
+      <td><strong>ANO</strong><br><input type="number" id="ano" value="2025"></td>
+      <td colspan="3"><button onclick="gerarFolha()">Gerar Folha</button></td>
+    </tr>
+  </table>
+
+  <table id="tabela-ponto" style="display:none;">
+    <thead>
+      <tr>
+        <th rowspan="2">DIAS</th>
+        <th colspan="2">MANHÃ</th>
+        <th colspan="2">TARDE</th>
+        <th colspan="2">EXTRA</th>
+        <th rowspan="2" style="width: 70px;">HORAS EXTRAS</th>
+      </tr>
+      <tr>
+        <th>ENTRADA</th>
+        <th>SAÍDA</th>
+        <th>ENTRADA</th>
+        <th>SAÍDA</th>
+        <th>ENTRADA</th>
+        <th>SAÍDA</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaDias"></tbody>
+  </table>
+
+  <div class="assinatura" id="assinatura" style="display:none;">
+    <strong>ASSINATURA DO COLABORADOR:</strong> ________________________________________
+  </div>
+
+  <button onclick="window.print()" id="btn-imprimir" style="display:none;">Imprimir Folha</button>
+
+  <script>
+    function gerarFolha() {
+      const mes = parseInt(document.getElementById('mes').value);
+      const ano = parseInt(document.getElementById('ano').value);
+
+      const tabela = document.getElementById('tabelaDias');
+      const tabelaPonto = document.getElementById('tabela-ponto');
+      const assinatura = document.getElementById('assinatura');
+      const btnImprimir = document.getElementById('btn-imprimir');
+
+      tabela.innerHTML = ''; // Limpa antes de gerar
+
+      // Descobrir número de dias no mês
+      const diasNoMes = new Date(ano, mes, 0).getDate();
+
+      for (let i = 1; i <= diasNoMes; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i.toString().padStart(2, '0')}</td>
+          <td><input type="time" name="manhaEntrada_${i}" step="60"></td>
+          <td><input type="time" name="manhaSaida_${i}" step="60"></td>
+          <td><input type="time" name="tardeEntrada_${i}" step="60"></td>
+          <td><input type="time" name="tardeSaida_${i}" step="60"></td>
+          <td><input type="time" name="extraEntrada_${i}" step="60"></td>
+          <td><input type="time" name="extraSaida_${i}" step="60"></td>
+          <td><input type="text" name="horasExtras_${i}" maxlength="5" placeholder="hh:mm"></td>
+        `;
+        tabela.appendChild(tr);
+      }
+
+      tabelaPonto.style.display = 'table';
+      assinatura.style.display = 'block';
+      btnImprimir.style.display = 'inline-block';
+    }
+  </script>
+</body>
+</html>
